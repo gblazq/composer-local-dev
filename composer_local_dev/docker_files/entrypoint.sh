@@ -74,10 +74,40 @@ create_user() {
   sudo find /var -user "${old_user_id}" -exec chown -h "${user_name}" {} \;
 }
 
+run_airflow_as_host_user() {
+  create_user "${COMPOSER_HOST_USER_NAME}" "${COMPOSER_HOST_USER_ID}"
+  echo "Running Airflow as user ${COMPOSER_HOST_USER_NAME}(${COMPOSER_HOST_USER_ID})"
+  sudo -E -u "${COMPOSER_HOST_USER_NAME}" env PATH=${PATH} airflow scheduler &
+  sudo -E -u "${COMPOSER_HOST_USER_NAME}" env PATH=${PATH} airflow triggerer &
+  exec sudo -E -u "${COMPOSER_HOST_USER_NAME}" env PATH=${PATH} airflow webserver
+}
+
+run_airflow_as_airflow_user() {
+  echo "Running Airflow as user airflow(999)"
+  airflow scheduler &
+  airflow triggerer &
+  exec airflow webserver
+}
+
+install_and_run_sshd() {
+  echo "Installing sshd"
+  if ! command -v /usr/sbin/sshd &> /dev/null
+  then
+    sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install openssh-server > /dev/null 2>&1
+    sudo mkdir /run/sshd
+    echo "airflow:${COMPOSER_CONTAINER_AIRFLOW_USER_PASSWORD}" | sudo chpasswd
+  fi
+  sudo /usr/sbin/sshd
+}
+
 main() {
   sudo chown airflow:airflow airflow
 
   sudo chmod +x $run_as_user
+
+  if [ "${COMPOSER_CONTAINER_ENABLE_SSHD}" = "True" ]; then
+    install_and_run_sshd
+  fi
 
   if [ "${COMPOSER_CONTAINER_RUN_AS_HOST_USER}" = "True" ]; then
     # Do not recreate user if it already exists

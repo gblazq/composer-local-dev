@@ -457,6 +457,8 @@ class TestEnvironment:
     @pytest.mark.parametrize(
         "database_engine", constants.DatabaseEngine.choices()
     )
+    @pytest.mark.parametrize("ssh_port", [None, 2222])
+    @pytest.mark.parametrize("enable_ssh", [False, True])
     @mock.patch("composer_local_dev.environment.docker.from_env")
     @mock.patch("composer_local_dev.environment.assert_image_exists")
     def test_create_and_load_from_config(
@@ -466,6 +468,8 @@ class TestEnvironment:
         pypi_packages,
         database_engine,
         port,
+        enable_ssh,
+        ssh_port,
         tmp_path,
     ):
         env_dir_path = tmp_path / ".compose" / "my_env"
@@ -478,6 +482,8 @@ class TestEnvironment:
             dags_path=str(pathlib.Path(tmp_path)),
             dag_dir_list_interval=10,
             port=port,
+            enable_ssh=enable_ssh,
+            ssh_port=ssh_port,
             pypi_packages=pypi_packages,
             database_engine=database_engine,
         )
@@ -671,6 +677,8 @@ class TestEnvironment:
             "COMPOSER_IMAGE_VERSION": default_env.image_version,
             "COMPOSER_PYTHON_VERSION": "3",
             "COMPOSER_CONTAINER_RUN_AS_HOST_USER": "False",
+            "COMPOSER_CONTAINER_ENABLE_SSHD": "False",
+            "COMPOSER_CONTAINER_AIRFLOW_USER_PASSWORD": "airflow",
             "COMPOSER_HOST_USER_NAME": f"{getpass.getuser()}",
             "COMPOSER_HOST_USER_ID": f"{os.getuid() if platform.system() != 'Windows' else ''}",
             "AIRFLOW_HOME": "/home/airflow/airflow",
