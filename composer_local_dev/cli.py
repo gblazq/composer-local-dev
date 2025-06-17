@@ -190,7 +190,7 @@ option_ssh_port = click.option(
     "--ssh-port",
     type=click.IntRange(min=0, max=65535),
     help="Port used by SSH daemon",
-    show_default="read from the configuration file",
+    show_default="10022",
     metavar="SSHD_PORT",
 )
 
