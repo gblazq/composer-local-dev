@@ -645,7 +645,7 @@ class Environment:
             # By default, the container runs as the user `airflow` with UID 999. Set
             # this env variable to "True" to make it run as the current host user.
             "COMPOSER_CONTAINER_RUN_AS_HOST_USER": "False",
-            "COMPOSER_CONTAINER_ENABLE_SSHD": self.enable_ssh,
+            "COMPOSER_CONTAINER_ENABLE_SSHD": str(self.enable_ssh),
             "COMPOSER_CONTAINER_AIRFLOW_USER_PASSWORD": "airflow",
             "COMPOSER_HOST_USER_NAME": f"{getpass.getuser()}",
             "COMPOSER_HOST_USER_ID": f"{os.getuid() if platform.system() != 'Windows' else ''}",

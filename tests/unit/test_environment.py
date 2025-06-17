@@ -1034,6 +1034,8 @@ class TestEnvironment:
             "COMPOSER_PYTHON_VERSION": "3",
             "AIRFLOW_HOME": "/home/airflow/airflow",
             "COMPOSER_CONTAINER_RUN_AS_HOST_USER": "False",
+            "COMPOSER_CONTAINER_ENABLE_SSHD": "False",
+            "COMPOSER_CONTAINER_AIRFLOW_USER_PASSWORD": "airflow",
             "COMPOSER_HOST_USER_NAME": f"{getpass.getuser()}",
             "COMPOSER_HOST_USER_ID": f"{os.getuid() if platform.system() != 'Windows' else ''}",
             "AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT": "google-cloud-platform://?"
